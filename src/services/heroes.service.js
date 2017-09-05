@@ -10,8 +10,19 @@ const HEROES = [
   { id: 19, name: "Magma" },
   { id: 20, name: "Tornado" }
 ];
+// const HEROES = {
+//   id: number,
+//   name: string,
+//   avatar_url: string
+// };
 
 const getHeroes = new Promise((resolve, reject) => {
   resolve(HEROES);
 });
-export default getHeroes;
+
+const getHeroById = heroId =>
+  new Promise((resolve, reject) => {
+    resolve(HEROES.find(hero => hero.id === heroId));
+  });
+
+export { getHeroes, getHeroById };

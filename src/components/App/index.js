@@ -1,84 +1,37 @@
 import React, { Component } from "react";
 import "./App.css";
-import HeroesList from "../Heroes/HeroesList";
-import HeroesForm from "../Heroes/HeroesForm";
-
-import getHeroes from "../../services/heroes.service";
+import { BrowserRouter as Router, Route, NavLink } from "react-router-dom";
+import Heroes from "../Heroes";
+//import HeroesList from "../Heroes.HeroesList"
+import Dashboard from "../Dashboard";
+import HeroForm from "../Heroes/HeroForm";
 
 class App extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      title: "Git Heroes",
-      heroes: [],
-      selectedHero: {
-        name: "",
-        id: undefined
-      }
-    };
-    //explicit binding
-    this.handleSelectHero = this.handleSelectHero.bind(this);
-    this.handleOnChange = this.handleOnChange.bind(this);
-    this.handleOnSubmit = this.handleOnSubmit.bind(this);
-  }
-  componentWillMount() {
-    getHeroes.then(payload => {
-      this.setState({
-        heroes: payload
-      });
-    });
-  }
-
-  //method handling
-  handleSelectHero(hero) {
-    const heroIndex = this.state.heroes.map(o => o.id).indexOf(hero.id);
-    this.setState({
-      selectedHero: {
-        ...hero,
-        index: heroIndex
-      }
-    });
-    console.log(this.state.selectedHero.name);
-  }
-  handleOnChange(event) {
-    this.setState({
-      selectedHero: {
-        ...this.state.selectedHero,
-        name: event.target.value
-      }
-    });
-  }
-
-  handleOnSubmit(event) {
-    const slHero = this.state.selectedHero;
-    const heroes = this.state.heroes;
-    this.setState({
-      heroes: [
-        ...heroes.slice(0, slHero.index),
-        { ...slHero },
-        ...heroes.slice(slHero.index + 1, heroes.length)
-      ]
-    });
-    event.preventDefault();
-  }
-
   render() {
     return (
-      <div>
-        <h1>{this.state.title}</h1>
-        <HeroesList
-          heroes={this.state.heroes}
-          selectedHero={this.state.selectedHero}
-          onHeroClick={this.handleSelectHero}
-        />
-        <h2>{this.state.selectedHero.name} Details!!</h2>
-        <HeroesForm
-          selectedHero={this.state.selectedHero}
-          handleOnChange={() => this.handleOnChange}
-          handleOnSubmit={() => this.handleOnSubmit}
-        />
-      </div>
+      <Router>
+        <div>
+          <h1>Git Heroes</h1>
+          <nav>
+            <NavLink exact to="/" activeClassName="active">
+              Dashboard
+            </NavLink>
+            <NavLink exact to="/heroes" activeClassName="active">
+              Heroes
+            </NavLink>
+            <NavLink exact to="/addNew" activeClassName="active">
+              Add New Hero
+            </NavLink>
+          </nav>
+          <hr />
+          <Route exact path="/" component={Dashboard} />
+          <Route exact path="/heroes" component={Heroes} />
+          <Route path={"/heroes/details/:heroId"} component={HeroForm} />
+          <Route path="/addNew" component={HeroForm} />
+        </div>
+      </Router>
     );
   }
 }
+
 export default App;

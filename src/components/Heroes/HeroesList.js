@@ -15,4 +15,5 @@ const HeroesList = props => {
     </ul>
   );
 };
+
 export default HeroesList;
