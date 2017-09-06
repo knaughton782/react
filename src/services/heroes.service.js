@@ -1,28 +1,21 @@
-const HEROES = [
-  { id: 11, name: "Mr. Nice" },
-  { id: 12, name: "Narco" },
-  { id: 13, name: "Bombasto" },
-  { id: 14, name: "Celeritas" },
-  { id: 15, name: "Magneta" },
-  { id: 16, name: "RubberMan" },
-  { id: 17, name: "Dynama" },
-  { id: 18, name: "Dr IQ" },
-  { id: 19, name: "Magma" },
-  { id: 20, name: "Tornado" }
-];
-// const HEROES = {
-//   id: number,
-//   name: string,
-//   avatar_url: string
-// };
+const BASE_URL = "https://api.github.com/users/";
 
-const getHeroes = new Promise((resolve, reject) => {
-  resolve(HEROES);
-});
+const fetchGitHero = name =>
+  fetch(
+    `${BASE_URL}${name}?access_token=554612bc8de7a1a6744b77055cbab693543d20f0`
+  )
+    .then(status)
+    .then(payload => payload.json())
+    .then(user => user)
+    .catch(error => {
+      return Promise.reject(error);
+    });
 
-const getHeroById = heroId =>
-  new Promise((resolve, reject) => {
-    resolve(HEROES.find(hero => hero.id === heroId));
-  });
+function status(res) {
+  if (!res.ok) {
+    throw new Error(res.statusText);
+  }
+  return res;
+}
 
-export { getHeroes, getHeroById };
+export { fetchGitHero };

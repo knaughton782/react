@@ -1,22 +1,31 @@
 import React, { Component } from "react";
-import { getHeroById } from "../../services/heroes.service";
+import { connect } from "react-redux";
+import PropTypes from "prop-types";
+import { saveHero } from "../../actions";
+import { bindActionCreators } from "redux";
 
 class HeroForm extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      heroId: parseInt(this.props.match.params.heroId, 10)
+      hero: this.props.hero
     };
   }
 
-  componentWillMount() {
-    getHeroById(this.state.heroId).then(payload => {
-      console.log(payload);
-      this.setState({
-        hero: payload
-      });
+  handleOnSubmit = event => {
+    event.preventDefault();
+    this.props.onSave(this.state.hero.id, this.state.hero.name);
+    this.props.history.goBack();
+  };
+  //local state hero
+  handleOnChange = event => {
+    this.setState({
+      hero: {
+        ...this.state.hero,
+        name: event.target.value
+      }
     });
-  }
+  };
 
   render() {
     const hero = this.state.hero;
@@ -32,11 +41,7 @@ class HeroForm extends Component {
         </div>
         <form onSubmit={this.handleOnSubmit}>
           <label>name: </label>
-          <input
-            type="text"
-            value={hero.name}
-            onChange={this.props.handleOnChange}
-          />
+          <input type="text" value={hero.name} onChange={this.handleOnChange} />
           <input className="button" type="submit" value="Submit" />
         </form>
       </div>
@@ -46,4 +51,14 @@ class HeroForm extends Component {
 
 HeroForm.propTypes = {};
 
-export default HeroForm;
+const mapStatetoProps = (state, props) => {
+  const heroId = parseInt(props.match.params.heroId, 10);
+  return {
+    hero: state.heroes.find(hero => hero.id === heroId)
+  };
+};
+
+const mapDispatchToProps = dispatch => ({
+  onSave: bindActionCreators(saveHero, dispatch)
+});
+export default connect(mapStatetoProps, mapDispatchToProps)(HeroForm);

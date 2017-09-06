@@ -1,9 +1,10 @@
 import React, { Component } from "react";
+import { connect } from "react-redux";
 import "./Hero.css";
-//import HeroForm from "./HeroForm";
-import HeroesList from "./HeroesList";
 
-//import { Route } from "react-router-dom";
+import HeroesList from "./HeroesList";
+import AddHero from "./AddHero";
+import { Route, Link } from "react-router-dom";
 
 import { getHeroes } from "../../services/heroes.service";
 
@@ -16,27 +17,17 @@ class Heroes extends Component {
   constructor() {
     super();
     this.state = {
-      heroes: [],
       selectedHero: DEFAULT_NO_HERO
     };
 
     //explicit binding
     this.handleSelectHero = this.handleSelectHero.bind(this);
-    this.handleOnChange = this.handleOnChange.bind(this);
+
     this.handleOnSubmit = this.handleOnSubmit.bind(this);
   }
-
-  componentWillMount() {
-    getHeroes.then(payload => {
-      this.setState({
-        heroes: payload
-      });
-    });
-  }
-  //method handling
-
+  //hero keeps a copy of a local state
   handleSelectHero(hero) {
-    const heroIndex = this.state.heroes.map(o => o.id).indexOf(hero.id);
+    const heroIndex = this.props.heroes.map(o => o.id).indexOf(hero.id);
     hero = this.state.selectedHero.id !== hero.id ? hero : DEFAULT_NO_HERO;
     this.setState({
       selectedHero: {
@@ -44,7 +35,6 @@ class Heroes extends Component {
         index: heroIndex
       }
     });
-    console.log(this.state.selectedHero.name);
   }
 
   handleOnChange(event) {
@@ -58,13 +48,16 @@ class Heroes extends Component {
 
   handleOnSubmit(event) {
     //create const to clean up code
-    const slHero = this.state.selectedHero;
-    const heroes = this.state.heroes;
+    //const slHero = this.state.selectedHero;
+    //const heroes = this.state.heroes;
     this.setState({
       heroes: [
-        ...heroes.slice(0, slHero.index),
-        { ...slHero },
-        ...heroes.slice(slHero.index + 1, heroes.length)
+        ...this.state.heroes.slice(0, this.state.selectedHero.index),
+        { id: this.state.selectedHero.id, name: this.state.selectedHero.name },
+        ...this.state.heroes.slice(
+          this.state.selectedHero.index + 1,
+          this.state.heroes.length
+        )
       ],
       selectedHero: DEFAULT_NO_HERO
     });
@@ -76,13 +69,24 @@ class Heroes extends Component {
       <div>
         <h1>{this.state.title}</h1>
         <HeroesList
-          heroes={this.state.heroes}
+          heroes={this.props.heroes}
           selectedHero={this.state.selectedHero}
           onHeroClick={this.handleSelectHero}
         />
+        {this.state.selectedHero.name && (
+          <div>
+            <h2>{this.state.selectedHero.name}</h2>
+            <Link to={`/heroes/details/${this.state.selectedHero.id}`}>
+              <button>Details</button>
+            </Link>
+          </div>
+        )}
       </div>
     );
   }
 }
+const mapStatetoProps = state => ({
+  heroes: state.heroes
+});
 
-export default Heroes;
+export default connect(mapStatetoProps)(Heroes);

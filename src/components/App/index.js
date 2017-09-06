@@ -1,12 +1,15 @@
 import React, { Component } from "react";
-import "./App.css";
 import { BrowserRouter as Router, Route, NavLink } from "react-router-dom";
 import Heroes from "../Heroes";
-//import HeroesList from "../Heroes.HeroesList"
 import Dashboard from "../Dashboard";
 import HeroForm from "../Heroes/HeroForm";
+import AddHero from "../Heroes/AddHero";
+
+import "./App.css";
 
 class App extends Component {
+  state = {};
+
   render() {
     return (
       <Router>
@@ -19,15 +22,16 @@ class App extends Component {
             <NavLink exact to="/heroes" activeClassName="active">
               Heroes
             </NavLink>
-            <NavLink exact to="/addNew" activeClassName="active">
-              Add New Hero
+            <NavLink exact to="/heroes/add" activeClassName="active">
+              Add Hero
             </NavLink>
           </nav>
           <hr />
+
           <Route exact path="/" component={Dashboard} />
           <Route exact path="/heroes" component={Heroes} />
+          <Route path="/heroes/add" component={AddHero} />
           <Route path={"/heroes/details/:heroId"} component={HeroForm} />
-          <Route path="/addNew" component={HeroForm} />
         </div>
       </Router>
     );
@@ -35,3 +39,5 @@ class App extends Component {
 }
 
 export default App;
+//exact path keeps two pages from rendering on the same page
+//semi colon tells router that we are setting it up as a match params to be used later...also creates a string which requires parseInt later...radix:second parameter is 10
